@@ -57,7 +57,7 @@ public:
     // 接受客户端的连接请求
     bool accept()
     {
-        if(m_clientfd == -1) return false;
+        if(m_clientfd != -1) return false;
         struct sockaddr_in clientaddr;
         socklen_t addrlen=sizeof(clientaddr);   // struct sockaddr_in的大小。
         if ((m_clientfd=::accept(m_listenfd,(struct sockaddr *)&clientaddr,&addrlen)) == -1) return false;
