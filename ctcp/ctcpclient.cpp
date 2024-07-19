@@ -31,7 +31,7 @@ public:
 
         // 连接服务器
         struct hostent *tmp;
-        if((tmp = gethostbyname(m_ip.c_str())) == nullptr)  // 获取主机IP
+        if((tmp = gethostbyname(m_ip.c_str())) == NULL)  // 获取主机IP
         {
             ::close(m_clientfd);
             m_clientfd = -1;
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
     string buffer;
     for(int i = 0; i < 3; i++)
     {
-        buffer = "这是第" + to_string(i) + "个请求报文";    // 生成请求报文，拼接时需要其中一个为string
+        buffer = "我是请求报文";   // 生成请求报文，拼接时需要其中一个为string
         if(!tcpclient.send(buffer))
         {
             perror("send()");
