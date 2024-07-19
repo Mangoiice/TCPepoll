@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     // 输入参数检测，不符合会直接结束进程
     if(argc != 3)
     {
-        cout << "Using:./tcpclient 服务器IP 服务端口号\nExample:./tcpclient 192.168.207.129 5005" << endl;
+        cout << "Using:./tcpclient 服务器IP 通讯端口号\nExample:./tcpclient 192.168.207.129 5005" << endl;
         return -1;
     }
 
@@ -68,12 +68,12 @@ int main(int argc, char *argv[])
     struct sockaddr_in servaddr;    // 用于存放服务段IP和端口的结构体
     memset(&servaddr, 0, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = inet_addr(tmp->h_addr);  //inet_addr函数将ip地址字符串"192.168.1.1"转化为网络字节序的整数
-    //memcpy(&servaddr.sin_addr, tmp->h_addr_list, tmp->h_length);
+    //servaddr.sin_addr.s_addr = inet_addr(tmp->h_addr);  //inet_addr函数将ip地址字符串"192.168.1.1"转化为网络字节序的整数
+    memcpy(&servaddr.sin_addr, tmp->h_addr, tmp->h_length);
     servaddr.sin_port = htons(atoi(argv[2]));   // atoi函数将数字字符串转化为数字 "12345" -> 12345
 
     // 调用connect函数，成功相当于服务端把连接请求加入等待队列中，不等于accept
-    if(connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr) != 0))
+    if((connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) != 0))
     {
         perror("connect");
         close(sockfd);
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
         memset(buffer, 0, sizeof(buffer));
         sprintf(buffer, "这是第%d个报文", i);   // sprintf函数将字符串输出到指定数组中
         // 发送请求报文。报文中携带要发送的信息
-        if(send(sockfd, buffer, sizeof(buffer), 0) != 0)
+        if(send(sockfd, buffer, sizeof(buffer), 0) <= 0)
         {
             perror("send"); // 这里不关闭sockfd的原因是，可能只是某一次发送出错，不影响后续发送
             break;
@@ -105,4 +105,6 @@ int main(int argc, char *argv[])
     }
     // 第4步：关闭socket，释放资源
     close(sockfd);
+
+    return 0;
 }
